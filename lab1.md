@@ -4,7 +4,6 @@
 
 **Due: Wed, Mar 10 11:59 PM EDT**
 
-
 <!--
 **Bug Update:** We have a [page](bugs.html) to keep track
 of SimpleDB bugs that you or we find. Fixes for bugs/annoyances will also be
@@ -12,64 +11,77 @@ posted there. Some bugs may have already been found, so do take a look at the pa
 to get the latest version/ patches for the lab code.
 -->
 
-In the lab assignments in 6.830 you will write a basic database management system called SimpleDB. For this lab, you
-will focus on implementing the core modules required to access stored data on disk; in future labs, you will add support
-for various query processing operators, as well as transactions, locking, and concurrent queries.
+在 6.830 的实验作业中你将编写一个叫做 SimpleDB 的基础数据库管理系统
 
-SimpleDB is written in Java. We have provided you with a set of mostly unimplemented classes and interfaces. You will
-need to write the code for these classes. We will grade your code by running a set of system tests written
-using [JUnit](http://junit.sourceforge.net/). We have also provided a number of unit tests, which we will not use for
-grading but that you may find useful in verifying that your code works. We also encourage you to develop your own test
-suite in addition to our tests.
+本实验中，你将关注于如何实现访问硬盘上数据这一需求的核心模块
 
-The remainder of this document describes the basic architecture of SimpleDB, gives some suggestions about how to start
-coding, and discusses how to hand in your lab.
+在后续实验中，还需要支持查询运算、事务、锁以及并发查询
 
-We **strongly recommend** that you start as early as possible on this lab. It requires you to write a fair amount of
-code!
+SimpleDB 使用 Java 实现.
+
+我们提供了一系列没有完全实现的类和接口
+
+你需要写出这些类缺失的代码
+
+然后需要通过一系列基于 Junit 编写的单元测试获得分数
+
+我们还提供了一些虽然不计入分数但能验证你写的代码是否工作的单元测试
+
+我们也鼓励你开发自己专属的单元测试
+
+本文剩余部分描述了 SimpleDB 的基本架构，对如何着手编程给了一些建议
+还讨论了如何提交作业
+
+我们强烈建议你尽早开始实验，因为要写的代码确实不少
 
 <!--
 
-##  0.  Find bugs, be patient, earn candy bars 
+##  0.  发现漏洞，保持耐心，赚取糖果
 
-SimpleDB is a relatively complex piece of code.
-It is very possible you are going to find bugs, inconsistencies, and bad,
-outdated, or incorrect documentation, etc.
 
-We ask you, therefore, to do this lab with an adventurous mindset.  Don't get
-mad if something is not clear, or even wrong; rather, try to figure it out
-yourself or send us a friendly email.  We promise to help out by posting
-bug fixes, new commits to the HW repo, etc., as bugs and issues are reported.
+SimpleDB 是一项相对复杂的编程任务
+你很可能会发现错误、不一致和不好的地方，
+过时或不正确的文件等。
 
-<p>...and if you find a bug in our code, we`ll give you a candy bar (see [Section 3.3](#bugs))!
+因此，我们要求你以冒险的心态来做这个实验。
+
+ 如果有些事情不清楚，甚至是错误的，不要生气
+
+相反，试着自己弄清楚或者给我们发一封友好的电子邮件。
+
+我们承诺收到问题报告后会通过发布bug补丁、重新提交等来帮助解决问题。,
+
+<p>...而且如果你找到了我们代码中的bug
+我们将给你块糖(see [Section 3.3](#bugs))!
 
 -->
 <!--which you can find [here](bugs.html).</p>-->
 
-## 0. Environment Setup
+## 0. 环境设置
 
-**Start by downloading the code for lab 1 from the course GitHub repository by following the
-instructions [here](https://github.com/MIT-DB-Class/simple-db-hw-2021).**
+**从下面的课程 GitHub 库下载 lab1 源码以及后续说明
+[here](https://github.com/MIT-DB-Class/simple-db-hw-2021).**
 
-These instructions are written for Athena or any other Unix-based platform (e.g., Linux, MacOS, etc.)  Because the code
-is written in Java, it should work under Windows as well, although the directions in this document may not apply.
+这些说明是基于 Athena 和别的 Unix-based 平台 (e.g., Linux, MacOS, etc.)
+不过由于代码有 Java 编写，在 windows 应该也能运行
+尽管可能不太一样
 
-We have included [Section 1.2](#eclipse) on using the project with Eclipse or IntelliJ.
+[Section 1.2](#eclipse) 介绍了如何使用 eclipse 或 idea 编辑代码
 
-## 1. Getting started
+## 1. 开始
 
-SimpleDB uses the [Ant build tool](http://ant.apache.org/) to compile the code and run tests. Ant is similar
-to [make](http://www.gnu.org/software/make/manual/), but the build file is written in XML and is somewhat better suited
-to Java code. Most modern Linux distributions include Ant. Under Athena, it is included in the `sipb` locker, which you
-can get to by typing `add sipb` at the Athena prompt. Note that on some versions of Athena you must also
-run `add -f java` to set the environment correctly for Java programs. See
-the [Athena documentation on using Java](http://web.mit.edu/acs/www/languages.html#Java) for more details.
+SimpleDB 使用 [Ant build tool](http://ant.apache.org/) 编译和测试代码
+Ant 与[make](http://www.gnu.org/software/make/manual/), 相似，但 build 文件由 XML
+编写并且更加适配 Java 代码. 大多数版本的 Linux 自带 Ant. Under Athena
+在 `sipb` 里, 你可以在 Athena prompt 输入 `add sipb` 查看.
+注意在某些版本的 Athena 中必须同时执行`add -f java`
+来设置正确的 Java 编程环境.详情参考 [Athena documentation on using Java](http://web.mit.edu/acs/www/languages.html#Java)
 
-To help you during development, we have provided a set of unit tests in addition to the end-to-end tests that we use for
-grading. These are by no means comprehensive, and you should not rely on them exclusively to verify the correctness of
-your project (put those 6.170 skills to use!).
+为了在开发过程中帮一手，我们提供了若干一对一的单元测试用来打分
+这些测试未必全面，所以不要完全依赖它们验证你的程序是否正确
+(6.170 学到的绝活该派上用场了).
 
-To run the unit tests use the `test` build target:
+为了运行单元测试，使用 `test` 构建目标 :
 
 ```
 $ cd [project-directory]
@@ -79,7 +91,7 @@ $ # run a specific unit test
 $ ant runtest -Dtest=TupleTest
 ```
 
-You should see output similar to:
+你会看到类似下面这样的输出:
 
 ```
  build output...
@@ -100,15 +112,15 @@ If you wish to write new unit tests as you code, they should be added to the <tt
 
 <p>For more details about how to use Ant, see the [manual](http://ant.apache.org/manual/). The [Running Ant](http://ant.apache.org/manual/running.html) section provides details about using the `ant` command. However, the quick reference table below should be sufficient for working on the labs.
 
-Command | Description
---- | ---
-ant|Build the default target (for simpledb, this is dist).
-ant -projecthelp|List all the targets in `build.xml` with descriptions.
-ant dist|Compile the code in src and package it in `dist/simpledb.jar`.
-ant test|Compile and run all the unit tests.
-ant runtest -Dtest=testname|Run the unit test named `testname`.
-ant systemtest|Compile and run all the system tests.
-ant runsystest -Dtest=testname|Compile and run the system test named `testname`.
+| Command                        | Description                                                    |
+| ------------------------------ | -------------------------------------------------------------- |
+| ant                            | Build the default target (for simpledb, this is dist).         |
+| ant -projecthelp               | List all the targets in `build.xml` with descriptions.         |
+| ant dist                       | Compile the code in src and package it in `dist/simpledb.jar`. |
+| ant test                       | Compile and run all the unit tests.                            |
+| ant runtest -Dtest=testname    | Run the unit test named `testname`.                            |
+| ant systemtest                 | Compile and run all the system tests.                          |
+| ant runsystest -Dtest=testname | Compile and run the system test named `testname`.              |
 
 If you are under windows system and don't want to run ant tests from command line, you can also run them from eclipse.
 Right click build.xml, in the targets tab, you can see "runtest" "runsystest" etc. For example, select runtest would be
@@ -131,10 +143,10 @@ $ ant systemtest
     [junit]     Caused an ERROR
     [junit] expected to find the following tuples:
     [junit]     19128
-    [junit] 
+    [junit]
     [junit] java.lang.AssertionError: expected to find the following tuples:
     [junit]     19128
-    [junit] 
+    [junit]
     [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:122)
     [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:83)
     [junit]     at simpledb.systemtest.SystemTestUtil.matchTuples(SystemTestUtil.java:75)
@@ -154,7 +166,7 @@ $ ant systemtest
     [junit] Testsuite: simpledb.systemtest.ScanTest
     [junit] Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 7.278 sec
     [junit] Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 7.278 sec
-    [junit] 
+    [junit]
     [junit] Testcase: testSmall took 0.937 sec
     [junit] Testcase: testLarge took 5.276 sec
     [junit] Testcase: testRandom took 1.049 sec
@@ -216,13 +228,13 @@ ant eclipse
 
 **Setting the Lab Up in Eclipse**
 
-* Once Eclipse is installed, start it, and note that the first screen asks you to select a location for your workspace (
+- Once Eclipse is installed, start it, and note that the first screen asks you to select a location for your workspace (
   we will refer to this directory as $W). Select the directory containing your simple-db-hw repository.
-* In Eclipse, select File->New->Project->Java->Java Project, and push Next.
-* Enter "simple-db-hw" as the project name.
-* On the same screen that you entered the project name, select "Create project from existing source," and browse to
+- In Eclipse, select File->New->Project->Java->Java Project, and push Next.
+- Enter "simple-db-hw" as the project name.
+- On the same screen that you entered the project name, select "Create project from existing source," and browse to
   $W/simple-db-hw.
-* Click finish, and you should be able to see "simple-db-hw" as a new project in the Project Explorer tab on the
+- Click finish, and you should be able to see "simple-db-hw" as a new project in the Project Explorer tab on the
   left-hand side of your screen. Opening this project reveals the directory structure discussed above - implementation
   code can be found in "src," and unit tests and system tests found in "test."
 
@@ -237,8 +249,8 @@ you don't switch, you may see spurious test failures in some of the performance 
 To run a unit test or system test (both are JUnit tests, and can be initialized the same way), go to the Package
 Explorer tab on the left side of your screen. Under the "simple-db-hw" project, open the "test" directory. Unit tests
 are found in the "simpledb" package, and system tests are found in the "simpledb.systemtests" package. To run one of
-these tests, select the test (they are all called *Test.java - don't select TestUtil.java or SystemTestUtil.java), right
-click on it, select "Run As," and select "JUnit Test."  This will bring up a JUnit tab, which will tell you the status
+these tests, select the test (they are all called \*Test.java - don't select TestUtil.java or SystemTestUtil.java), right
+click on it, select "Run As," and select "JUnit Test." This will bring up a JUnit tab, which will tell you the status
 of the individual tests within the JUnit test suite, and will show you exceptions and other errors that will help you
 debug problems.
 
@@ -299,19 +311,19 @@ more sense for you.
 
 **Here's a rough outline of one way you might proceed with your SimpleDB implementation:**
 
-****
+---
 
-* Implement the classes to manage tuples, namely Tuple, TupleDesc. We have already implemented Field, IntField,
+- Implement the classes to manage tuples, namely Tuple, TupleDesc. We have already implemented Field, IntField,
   StringField, and Type for you. Since you only need to support integer and (fixed length) string fields and fixed
   length tuples, these are straightforward.
-* Implement the Catalog (this should be very simple).
-* Implement the BufferPool constructor and the getPage() method.
-* Implement the access methods, HeapPage and HeapFile and associated ID classes. A good portion of these files has
+- Implement the Catalog (this should be very simple).
+- Implement the BufferPool constructor and the getPage() method.
+- Implement the access methods, HeapPage and HeapFile and associated ID classes. A good portion of these files has
   already been written for you.
-* Implement the operator SeqScan.
-* At this point, you should be able to pass the ScanTest system test, which is the goal for this lab.
+- Implement the operator SeqScan.
+- At this point, you should be able to pass the ScanTest system test, which is the goal for this lab.
 
-***
+---
 
 Section 2 below walks you through these implementation steps and the unit tests corresponding to each one in more
 detail.
@@ -328,25 +340,25 @@ pass this transaction ID into other operators and the buffer pool.
 
 SimpleDB consists of:
 
-* Classes that represent fields, tuples, and tuple schemas;
-* Classes that apply predicates and conditions to tuples;
-* One or more access methods (e.g., heap files) that store relations on disk and provide a way to iterate through tuples
+- Classes that represent fields, tuples, and tuple schemas;
+- Classes that apply predicates and conditions to tuples;
+- One or more access methods (e.g., heap files) that store relations on disk and provide a way to iterate through tuples
   of those relations;
-* A collection of operator classes (e.g., select, join, insert, delete, etc.) that process tuples;
-* A buffer pool that caches active tuples and pages in memory and handles concurrency control and transactions (neither
+- A collection of operator classes (e.g., select, join, insert, delete, etc.) that process tuples;
+- A buffer pool that caches active tuples and pages in memory and handles concurrency control and transactions (neither
   of which you need to worry about for this lab); and,
-* A catalog that stores information about available tables and their schemas.
+- A catalog that stores information about available tables and their schemas.
 
-SimpleDB does not include many things that you may think of as being a part of a "database."  In particular, SimpleDB
+SimpleDB does not include many things that you may think of as being a part of a "database." In particular, SimpleDB
 does not have:
 
-* (In this lab), a SQL front end or parser that allows you to type queries directly into SimpleDB. Instead, queries are
+- (In this lab), a SQL front end or parser that allows you to type queries directly into SimpleDB. Instead, queries are
   built up by chaining a set of operators together into a hand-built query plan (see [Section 2.7](#query_walkthrough)).
   We will provide a simple parser for use in later labs.
-* Views.
-* Data types except integers and fixed length strings.
-* (In this lab) Query optimizer.
-* (In this lab) Indices.
+- Views.
+- Data types except integers and fixed length strings.
+- (In this lab) Query optimizer.
+- (In this lab) Indices.
 
 <p>
 
@@ -373,13 +385,13 @@ file as you will need to access these objects.
 ### Exercise 1
 
 **Implement the skeleton methods in:**
-***
 
-* src/java/simpledb/storage/TupleDesc.java
-* src/java/simpledb/storage/Tuple.java
+---
 
-***
+- src/java/simpledb/storage/TupleDesc.java
+- src/java/simpledb/storage/Tuple.java
 
+---
 
 At this point, your code should pass the unit tests TupleTest and TupleDescTest. At this point, modifyRecordId() should
 fail because you havn't implemented it yet.
@@ -398,11 +410,12 @@ using `Database.getBufferPool()`).
 ### Exercise 2
 
 **Implement the skeleton methods in:**
-***
 
-* src/java/simpledb/common/Catalog.java
+---
 
-*** 
+- src/java/simpledb/common/Catalog.java
+
+---
 
 At this point, your code should pass the unit tests in CatalogTest.
 
@@ -417,15 +430,14 @@ BufferPool instance for the entire SimpleDB process.
 
 **Implement the `getPage()` method in:**
 
-***
+---
 
-* src/java/simpledb/storage/BufferPool.java
+- src/java/simpledb/storage/BufferPool.java
 
-***
+---
 
 We have not provided unit tests for BufferPool. The functionality you implemented will be tested in the implementation
 of HeapFile below. You should use the `DbFile.readPage` method to access pages of a DbFile.
-
 
 <!--
 When more than this many pages are in the buffer pool, one page should be
@@ -457,21 +469,19 @@ one `HeapFile` object for each table in the database. Each page in a `HeapFile` 
 which can hold one tuple (tuples for a given table in SimpleDB are all of the same size). In addition to these slots,
 each page has a header that consists of a bitmap with one bit per tuple slot. If the bit corresponding to a particular
 tuple is 1, it indicates that the tuple is valid; if it is 0, the tuple is invalid (e.g., has been deleted or was never
-initialized.)  Pages of `HeapFile` objects are of type `HeapPage` which implements the `Page` interface. Pages are
+initialized.) Pages of `HeapFile` objects are of type `HeapPage` which implements the `Page` interface. Pages are
 stored in the buffer pool but are read and written by the `HeapFile` class.
 
 <p>
 
 SimpleDB stores heap files on disk in more or less the same format they are stored in memory. Each file consists of page
 data arranged consecutively on disk. Each page consists of one or more bytes representing the header, followed by the _
-page size_ bytes of actual page content. Each tuple requires _tuple size_ * 8 bits for its content and 1 bit for the
+page size_ bytes of actual page content. Each tuple requires _tuple size_ \* 8 bits for its content and 1 bit for the
 header. Thus, the number of tuples that can fit in a single page is:
 
 <p>
 
-`
-_tuples per page_ = floor((_page size_ * 8) / (_tuple size_ * 8 + 1))
-`
+`_tuples per page_ = floor((_page size_ * 8) / (_tuple size_ * 8 + 1))`
 
 <p>
 
@@ -483,11 +493,10 @@ floor operation rounds down to the nearest integer number of tuples (we don't wa
 <p>
 
 Once we know the number of tuples per page, the number of bytes required to store the header is simply:
+
 <p>
 
-`
-headerBytes = ceiling(tupsPerPage/8)
-`
+`headerBytes = ceiling(tupsPerPage/8)`
 
 <p>
 
@@ -508,14 +517,14 @@ are [big-endian](http://en.wikipedia.org/wiki/Endianness).
 ### Exercise 4
 
 **Implement the skeleton methods in:**
-***
 
-* src/java/simpledb/storage/HeapPageId.java
-* src/java/simpledb/storage/RecordId.java
-* src/java/simpledb/storage/HeapPage.java
+---
 
-***
+- src/java/simpledb/storage/HeapPageId.java
+- src/java/simpledb/storage/RecordId.java
+- src/java/simpledb/storage/HeapPage.java
 
+---
 
 Although you will not use them directly in Lab 1, we ask you to implement <tt>getNumEmptySlots()</tt> and <tt>
 isSlotUsed()</tt> in HeapPage. These require pushing around bits in the page header. You may find it helpful to look at
@@ -527,8 +536,7 @@ structure.
 
 At this point, your code should pass the unit tests in HeapPageIdTest, RecordIDTest, and HeapPageReadTest.
 
-
-<p> 
+<p>
 
 After you have implemented <tt>HeapPage</tt>, you will write methods for <tt>HeapFile</tt> in this lab to calculate the
 number of pages in a file and to read a page from the file. You will then be able to fetch tuples from a file stored on
@@ -538,11 +546,11 @@ disk.
 
 **Implement the skeleton methods in:**
 
-***
+---
 
-* src/java/simpledb/storage/HeapFile.java
+- src/java/simpledb/storage/HeapFile.java
 
-*** 
+---
 
 To read a page from disk, you will first need to calculate the correct offset in the file. Hint: you will need random
 access to the file in order to read and write pages at arbitrary offsets. You should not call BufferPool methods when
@@ -591,11 +599,12 @@ For this lab, you will only need to implement one SimpleDB operator.
 
 **Implement the skeleton methods in:**
 
-***
+---
 
-* src/java/simpledb/execution/SeqScan.java
+- src/java/simpledb/execution/SeqScan.java
 
-***
+---
+
 This operator sequentially scans all of the tuples from the pages of the table specified by the `tableid` in the
 constructor. This operator should access tuples through the `DbFile.iterator()` method.
 
@@ -614,7 +623,7 @@ Suppose you have a data file, "some_data_file.txt", with the following contents:
 
 ```
 1,1,1
-2,2,2 
+2,2,2
 3,4,4
 ```
 
@@ -680,8 +689,8 @@ repeatedly calls `hasNext` and `next` on the `SeqScan` operator. As tuples are o
 printed out on the command line.
 
 We **strongly recommend** you try this out as a fun end-to-end test that will help you get experience writing your own
-test programs for simpledb. You should create the file "test.java" in the src/java/simpledb directory with the code above, 
-and you should add some "import" statement above the code, 
+test programs for simpledb. You should create the file "test.java" in the src/java/simpledb directory with the code above,
+and you should add some "import" statement above the code,
 and place the `some_data_file.dat` file in the top level directory. Then run:
 
 ```
@@ -696,10 +705,10 @@ Note that `ant` compiles `test.java` and generates a new jarfile that contains i
 You must submit your code (see below) as well as a short (2 pages, maximum) writeup describing your approach. This
 writeup should:
 
-* Describe any design decisions you made. These may be minimal for Lab 1.
-* Discuss and justify any changes you made to the API.
-* Describe any missing or incomplete elements of your code.
-* Describe how long you spent on the lab, and whether there was anything you found particularly difficult or confusing.
+- Describe any design decisions you made. These may be minimal for Lab 1.
+- Discuss and justify any changes you made to the API.
+- Describe any missing or incomplete elements of your code.
+- Describe how long you spent on the lab, and whether there was anything you found particularly difficult or confusing.
 
 ### 3.1. Collaboration
 
@@ -716,9 +725,9 @@ your code) and submit it on the [6.830 Stellar Site](https://stellar.mit.edu/S/c
 
 We will be using gradescope to autograde all programming assignments. You should have all been invited to the
 class instance; if not, please check piazza for an invite code. If you are still having trouble, let us know and we can
-help you set up. You may submit your code multiple times before the deadline; we will use the latest version as 
-determined by gradescope. Place the write-up in a file called lab1-writeup.txt with your submission. 
-You also need to explicitly add any other files you create, such as new *.java files.
+help you set up. You may submit your code multiple times before the deadline; we will use the latest version as
+determined by gradescope. Place the write-up in a file called lab1-writeup.txt with your submission.
+You also need to explicitly add any other files you create, such as new \*.java files.
 
 The easiest way to submit to gradescope is with `.zip` files containing your code. On Linux/MacOS, you can
 do so by running the following command:
@@ -732,9 +741,9 @@ $ zip -r submission.zip src/ lab1-writeup.txt
 Please submit (friendly!) bug reports to [6.830-staff@mit.edu](mailto:6.830-staff@mit.edu). When you do, please try to
 include:
 
-* A description of the bug.
-* A .java file we can drop in the test/simpledb directory, compile, and run.
-* A .txt file with the data that reproduces the bug. We should be able to convert it to a .dat file using
+- A description of the bug.
+- A .java file we can drop in the test/simpledb directory, compile, and run.
+- A .txt file with the data that reproduces the bug. We should be able to convert it to a .dat file using
   HeapFileEncoder.
 
 If you are the first person to report a particular bug in the code, we will give you a candy bar!
@@ -748,7 +757,7 @@ If you are the first person to report a particular bug in the code, we will give
 <p>75% of your grade will be based on whether or not your code passes the system test suite we will run over it. These tests will be a superset of the tests we have provided. Before handing in your code, you should make sure it produces no errors (passes all of the tests) from both  <tt>ant test</tt> and <tt>ant systemtest</tt>.
 
 **Important:** before testing, gradescope will replace your <tt>build.xml</tt> and the entire contents of the <tt>test</tt>
-directory with our version of these files. This means you cannot change the format of <tt>.dat</tt> files!  You should
+directory with our version of these files. This means you cannot change the format of <tt>.dat</tt> files! You should
 also be careful changing our APIs. You should test that your code compiles the unmodified tests.
 
 You should get immediate feedback and error outputs for failed tests (if any) from gradescope after

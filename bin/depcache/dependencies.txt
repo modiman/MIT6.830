@@ -424,9 +424,7 @@ java.lang.ArrayIndexOutOfBoundsException
 simpledb.storage.Field
 simpledb.index.BTreeInternalPageIterator
 simpledb.index.BTreeInternalPage
-simpledb.storage.RecordId
 java.lang.Class
-java.lang.StringBuilder
 java.lang.Object
 simpledb.common.Debug
 ||:simpledb.HeapFileReadTest
@@ -825,7 +823,7 @@ simpledb.storage.PageId
 simpledb.storage.HeapPageId
 java.lang.Object
 ||:simpledb.storage.RecordId
-simpledb.storage.PageId
+simpledb.storage.HeapPageId
 simpledb.storage.RecordId
 java.lang.Object
 java.io.Serializable
@@ -1068,6 +1066,7 @@ simpledb.index.BTreeEntry
 [B
 simpledb.index.BTreeUtility
 simpledb.storage.IntField
+java.lang.Error
 simpledb.index.BTreeRootPtrPage
 java.util.Random
 simpledb.index.BTreeUtility$BTreeDeleter
@@ -1095,7 +1094,6 @@ java.io.File
 simpledb.index.BTreeFile
 java.util.List
 simpledb.index.BTreeInternalPage
-simpledb.storage.RecordId
 simpledb.common.Catalog
 java.lang.Object
 simpledb.transaction.TransactionAbortedException
@@ -1533,9 +1531,8 @@ simpledb.transaction.TransactionAbortedException
 ||:simpledb.index.BTreeInternalPageIterator
 java.lang.UnsupportedOperationException
 java.util.Iterator
-simpledb.index.BTreeInternalPage
 simpledb.index.BTreeEntry
-simpledb.storage.RecordId
+java.lang.Error
 java.lang.Object
 java.util.NoSuchElementException
 simpledb.index.BTreeInternalPageIterator
@@ -2089,8 +2086,8 @@ java.lang.UnsupportedOperationException
 java.util.Iterator
 simpledb.index.BTreeInternalPage
 simpledb.index.BTreeEntry
-simpledb.storage.RecordId
 simpledb.index.BTreeInternalPageReverseIterator
+java.lang.Error
 java.lang.Object
 java.util.NoSuchElementException
 ||:simpledb.StringAggregatorTest
