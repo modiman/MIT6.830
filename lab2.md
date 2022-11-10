@@ -13,52 +13,54 @@ Version History:
 
 
 
-In this lab assignment, you will write a set of operators for SimpleDB to implement table modifications (e.g., insert
-and delete records), selections, joins, and aggregates. These will build on top of the foundation that you wrote in Lab
-1 to provide you with a database system that can perform simple queries over multiple tables.
+在本次实验作业中，您将为SimpleDB编写一组运算符来实现表修改 (e.g., 插入和删除、记录）选择、连接和聚合。
 
-Additionally, we ignored the issue of buffer pool management in Lab 1: we have not dealt with the problem that arises
-when we reference more pages than we can fit in memory over the lifetime of the database. In Lab 2, you will design an
-eviction policy to flush stale pages from the buffer pool.
+ 这些将建立在您在Lab1中编写的基础之上，为您提供一个可以对多个表执行简单查询的数据库系统。
 
-You do not need to implement transactions or locking in this lab.
+此外，我们在实验1忽略的缓冲池管理的问题:没有处理当引用的页面超过了数据库生命周期中的内存容量时出现的问题 。
 
-The remainder of this document gives some suggestions about how to start coding, describes a set of exercises to help
-you work through the lab, and discusses how to hand in your code. This lab requires you to write a fair amount of code,
-so we encourage you to **start early**!
+在实验2中，您将设计一个回收策略，从缓冲池中清除过时页面。
 
-<a name="starting"></a>
+
+
+在本实验中，您不需要实施事务或锁定。
+
+本文的其余部分给出了一些关于如何开始编码的建议，描述了一组帮助你完成实验的练习，并讨论了如何提交代码。
+
+代码量不小，请尽早开始
+
+
 
 ## 1. Getting started
 
-You should begin with the code you submitted for Lab 1 (if you did not
-submit code for Lab 1, or your solution didn't work properly, contact us to
-discuss options).  Additionally, we are providing extra source and test files
-for this lab that are not in the original code distribution you received.
+您应该从您为实验1提交的代码开始
+
+ (如果您没有提交实验1的代码，或者您的解决方案不能正常工作，请联系我们讨论解决办法).  
+
+此外，我们还为此实验提供额外的源代码和测试文件，这些文件不在您收到的原始代码分发中。
 
 ### 1.1. Getting Lab 2
 
-You will need to add these new files to your release. The easiest way
-to do this is to navigate to your project directory (probably called simple-db-hw)
-and pull from the master GitHub repository:
+您需要将这些新文件添加到您的版本中。
+
+最简单的方法是导航到您的项目目录(可能称为simple-db-hw ),并从主GitHub存储库中提取:
 
 ```
 $ cd simple-db-hw
 $ git pull upstream master
 ```
 
-**IDE users** will have update their project dependency to include the new library jars.
-For an easy solution, run
+**IDE用户**将更新他们的项目依赖项，以包括新的库jar。 一个简单的解决方案是，运行
+
 ```
 ant eclipse
 ```
 
-again, and reopen the project with either Eclipse or IntelliJ. 
+再次使用Eclipse或IntelliJ重新打开项目。
 
-If you have made other
-changes to your project setup and do not want to lose them, you can also add the dependencies
-manually. For eclipse, under the package explorer, right click the project name
-(probably <tt>simple-db-hw</tt>),  and select **Properties**.  Choose **Java Build Path**
+如果您对项目设置进行了其他更改，并且不想丢失这些更改, 您也可以手动添加依赖关系. 
+
+For eclipse, under the package explorer, right click the project name (probably <tt>simple-db-hw</tt>),  and select **Properties**.  Choose **Java Build Path**
 on the left-hand-side, and click on the **Libraries** tab on the right-hand-side.  Push
 the **Add JARs...** button, select **zql.jar** and **jline-0.9.94.jar**, and push **OK**,
 followed by **OK**.  Your code should now compile. For IntelliJ, go to **Project Structure**
@@ -69,12 +71,11 @@ the jars as compile-time dependencies.
 
 ### 1.2. Implementation hints
 
-As before, we **strongly encourage** you to read through this entire document to get a feel for the high-level design of
-SimpleDB before you write code.
+和以前一样，我们**强烈建议**您在编写代码之前通读整个文档，以便对SimpleDB的高级设计有所了解。
 
-We suggest exercises along this document to guide your implementation, but you may find that a different order makes
-more sense for you. As before, we will grade your assignment by looking at your code and verifying that you have passed
-the test for the ant targets `test` and
+我们建议通过本文中的练习来指导您的实现，但是您可能会发现不同的顺序对您更有意义。
+
+As before, we will grade your assignment by looking at your code and verifying that you have passed the test for the ant targets `test` and
 `systemtest`. Note the code only needs to pass the tests we indicate in this lab, not all of unit and system tests. See
 Section 3.4 for a complete discussion of grading and list of the tests you will need to pass.
 
@@ -140,14 +141,14 @@ operators that will enable you to perform queries that are slightly more interes
 
 Implement the skeleton methods in:
 
-***  
+***
 
 * src/java/simpledb/execution/Predicate.java
 * src/java/simpledb/execution/JoinPredicate.java
 * src/java/simpledb/execution/Filter.java
 * src/java/simpledb/execution/Join.java
 
-***  
+***
 
 At this point, your code should pass the unit tests in PredicateTest, JoinPredicateTest, FilterTest, and JoinTest.
 Furthermore, you should be able to pass the system tests FilterTest and JoinTest.
@@ -174,13 +175,13 @@ do not need to worry about the situation where the number of groups exceeds avai
 
 Implement the skeleton methods in:
 
-***  
+***
 
 * src/java/simpledb/execution/IntegerAggregator.java
 * src/java/simpledb/execution/StringAggregator.java
 * src/java/simpledb/execution/Aggregate.java
 
-***  
+***
 
 At this point, your code should pass the unit tests IntegerAggregatorTest, StringAggregatorTest, and AggregateTest.
 Furthermore, you should be able to pass the AggregateTest system test.
@@ -203,7 +204,7 @@ the physical file on disk. You will need to ensure that the RecordID in the tupl
 
 Implement the remaining skeleton methods in:
 
-***  
+***
 
 * src/java/simpledb/storage/HeapPage.java
 * src/java/simpledb/storage/HeapFile.java<br>
@@ -225,12 +226,12 @@ implementation of transactions in the next lab will not work properly.
 
 Implement the following skeleton methods in <tt>src/simpledb/BufferPool.java</tt>:
 
-***  
+***
 
 * insertTuple()
 * deleteTuple()
 
-***  
+***
 
 
 These methods should call the appropriate methods in the HeapFile that belong to the table being modified (this extra
@@ -259,12 +260,12 @@ returning a single tuple with one integer field, containing the count.
 
 Implement the skeleton methods in:
 
-***  
+***
 
 * src/java/simpledb/execution/Insert.java
 * src/java/simpledb/execution/Delete.java
 
-***  
+***
 
 At this point, your code should pass the unit tests in InsertTest. We have not provided unit tests for `Delete`.
 Furthermore, you should be able to pass the InsertTest and DeleteTest system tests.
@@ -296,7 +297,7 @@ page it evicts.
 
 Fill in the `flushPage()` method and additional helper methods to implement page eviction in:
 
-***  
+***
 
 * src/java/simpledb/storage/BufferPool.java
 

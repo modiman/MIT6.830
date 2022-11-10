@@ -632,6 +632,8 @@ public class test {
 }
 ```
 
+这个表有三个整数列。
+
 The table we create has three integer fields. To express this, we create a `TupleDesc` object and pass it an array
 of `Type` objects, and optionally an array of `String` field names. Once we have created this `TupleDesc`, we initialize
 a `HeapFile` object representing the table stored in `some_data_file.dat`. Once we have created the table, we add it to
