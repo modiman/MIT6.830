@@ -105,13 +105,12 @@ test:
  ... stack traces and error reports ...
 ```
 上面的输出表示编译出现了两处错误
-这是因为我们给的代码部分不是完整的
-如果你想写自己的单元测试，可以把他们添加到/test目录 
+这是因为我们给出的代码还不能运行 
+等你完成了实验部分才能通过剩余的单元测试 
+如果你编程的时候想要写自己的单元测试，
+If you wish to write new unit tests as you code, they should be added to the <tt>test/simpledb</tt> directory.
 
-
-[manual](http://ant.apache.org/manual/). The [Running Ant](http://ant.apache.org/manual/running.html) 获取更多关于ant的操作
-
-下面给出了一些本实验用到的指令
+<p>For more details about how to use Ant, see the [manual](http://ant.apache.org/manual/). The [Running Ant](http://ant.apache.org/manual/running.html) section provides details about using the `ant` command. However, the quick reference table below should be sufficient for working on the labs.
 
 | Command                        | Description                                                    |
 | ------------------------------ | -------------------------------------------------------------- |
@@ -123,16 +122,17 @@ test:
 | ant systemtest                 | Compile and run all the system tests.                          |
 | ant runsystest -Dtest=testname | Compile and run the system test named `testname`.              |
 
-如果你正在使用windows系统并且不想从命令行执行测试
-可以从eclipse运行
-右键点击build.xml可以看到"runtest" "runsystest"等等
+If you are under windows system and don't want to run ant tests from command line, you can also run them from eclipse.
+Right click build.xml, in the targets tab, you can see "runtest" "runsystest" etc. For example, select runtest would be
+equivalent to "ant runtest" from command line. Arguments such as "-Dtest=testname" can be specified in the "Main" Tab, "
+Arguments" textbox. Note that you can also create a shortcut to runtest by copying from build.xml, modifying targets and
+arguments and renaming it to, say, runtest_build.xml.
 
+### 1.1. Running end-to-end tests
 
-### 1.1. 运行一对一测试
-
-我们提供了一系列端对端测试用来打分
-这些测试放在test/simpledb/systemtest目录
-使用 `systemtest` 构建:
+We have also provided a set of end-to-end tests that will eventually be used for grading. These tests are structured as
+JUnit tests that live in the <tt>test/simpledb/systemtest</tt> directory. To run all the system tests, use
+the `systemtest` build target:
 
 ```
 $ ant systemtest
@@ -155,9 +155,8 @@ $ ant systemtest
 
  ... more error messages ...
 ```
-这表示测试失败了，想要debug,找到错误出现的代码段检查
-<p>
-如果测试通过，输出如下内容
+
+<p>This indicates that this test failed, showing the stack trace where the error was detected. To debug, start by reading the source code where the error occurred. When the tests pass, you will see something like the following:
 
 ```
 $ ant systemtest
@@ -176,26 +175,18 @@ BUILD SUCCESSFUL
 Total time: 52 seconds
 ```
 
+#### 1.1.1 Creating dummy tables
 
-<!-- 
-C A D D C
-B A B D A -->
-
-
-#### 1.1.1 创建笨蛋表
-
-很可能你想创建自己的测试用例和数据表来测试你的数据库实现
-
-你可以创建任意 <tt>.txt</tt> 文件并使用下面的指令
-把它转换成SimpleDB中`HeapFile`格式的 <tt>.dat</tt>文件 
-
+It is likely you'll want to create your own tests and your own data tables to test your own implementation of SimpleDB.
+You can create any <tt>.txt</tt> file and convert it to a <tt>.dat</tt> file in SimpleDB's `HeapFile` format using the
+command:
 
 ```
 $ java -jar dist/simpledb.jar convert file.txt N
 ```
-N是数据的列数
-注意file.txt要组织成下面的格式:
 
+where <tt>file.txt</tt> is the name of the file and <tt>N</tt> is the number of columns in the file. Notice that <tt>
+file.txt</tt> has to be in the following format:
 
 ```
 int1,int2,...,intN
@@ -204,35 +195,38 @@ int1,int2,...,intN
 int1,int2,...,intN
 ```
 
-... intN 是一个 非负整数
+...where each intN is a non-negative integer.
 
-
-使用`print` 命令查看表中内容:
+To view the contents of a table, use the `print` command:
 
 ```
 $ java -jar dist/simpledb.jar print file.dat N
 ```
 
+where <tt>file.dat</tt> is the name of a table created with the <tt>convert</tt> command, and <tt>N</tt> is the number
+of columns in the file.
 
 <a name="eclipse"></a>
 
-### 1.2. 使用IDE
+### 1.2. Working with an IDE
 
-IDEs (Integrated Development Environments) 是图形化软件开发环境，可以帮你管理更庞大的项目
-我们提供了以下两种IDE的支持
-[Eclipse](http://www.eclipse.org) and [IntelliJ](https://www.jetbrains.com/idea/). 
-实验说明中提供的Eclipse基于Java 1.7.
-对于IntelliJ, 我们使用Ultimate版,可以申请校园账户使用。我们强烈鼓励你为本项目部署一个IDE
+IDEs (Integrated Development Environments) are graphical software development environments that may help you manage
+larger projects. We provide instructions for setting up both
+[Eclipse](http://www.eclipse.org) and [IntelliJ](https://www.jetbrains.com/idea/). The instructions we provide for
+Eclipse were generated by using Eclipse for Java Developers (not the enterprise edition) with Java 1.7. For IntelliJ, we
+are using the Ultimate edition, which you can get with an education license through your mit.edu
+account [here](https://www.jetbrains.com/community/education/#students). We strongly encourage you to set up and learn
+one of the IDEs for this project.
 
+**Preparing the Codebase**
 
-**准备代码仓库**
+Run the following command to generate the project file for IDEs:
 
-运行下面的代码为IDE生成项目文件
 ```
 ant eclipse
 ```
 
-**基于Eclipse设置实验**
+**Setting the Lab Up in Eclipse**
 
 - Once Eclipse is installed, start it, and note that the first screen asks you to select a location for your workspace (
   we will refer to this directory as $W). Select the directory containing your simple-db-hw repository.
@@ -244,60 +238,61 @@ ant eclipse
   left-hand side of your screen. Opening this project reveals the directory structure discussed above - implementation
   code can be found in "src," and unit tests and system tests found in "test."
 
-**注意:** 本课程假定你使用的是Oracle官方发行的java版本
-这是 MacOS和大多数Windows Eclipse 的默认版本;
+**Note:** that this class assumes that you are using the official Oracle release of Java. This is the default on MacOS
+X, and for most Windows Eclipse installs; but many Linux distributions default to alternate Java runtimes (like OpenJDK)
+. Please download the latest Java8 updates
+from [Oracle Website](http://www.oracle.com/technetwork/java/javase/downloads/index.html), and use that Java version. If
+you don't switch, you may see spurious test failures in some of the performance tests in later labs.
 
-不过很多版本的Linux默认使用别的替代版本，比如 OpenJDK
-. 请从 [Oracle Website](http://www.oracle.com/technetwork/java/javase/downloads/index.html)下载jdk 8 
+**Running Individual Unit and System Tests**
 
-如果没有更换，后面的实验测试中你会遇到不少错误
-
-
-
-**运行独立单元测试和系统测试**
-
-为了运行单元测试和系统测试(都是Junit)
-点击左侧的Package Explorer，在"simple-db-hw" 项目下,打开"test"目录. Unit tests
-可以从 "simpledb" 包找到, system tests 可以从 "simpledb.systemtests" 包找到.
-
-想要运行测试，选择test (通常被命名为 \*Test.java - 别选TestUtil.java 或 SystemTestUtil.java), 右键, 选择 "Run As," 选择 "JUnit Test."这会打开一个JUnit tab, 告诉你测试状态 
+To run a unit test or system test (both are JUnit tests, and can be initialized the same way), go to the Package
+Explorer tab on the left side of your screen. Under the "simple-db-hw" project, open the "test" directory. Unit tests
+are found in the "simpledb" package, and system tests are found in the "simpledb.systemtests" package. To run one of
+these tests, select the test (they are all called \*Test.java - don't select TestUtil.java or SystemTestUtil.java), right
+click on it, select "Run As," and select "JUnit Test." This will bring up a JUnit tab, which will tell you the status
+of the individual tests within the JUnit test suite, and will show you exceptions and other errors that will help you
+debug problems.
 
 **Running Ant Build Targets**
 
-想要运行诸如"ant test" 或 "ant systemtest"之类的命令,右键build.xml 
+If you want to run commands such as "ant test" or "ant systemtest," right click on build.xml in the Package Explorer.
+Select "Run As," and then "Ant Build..." (note: select the option with the ellipsis (...), otherwise you won't be
+presented with a set of build targets to run). Then, in the "Targets" tab of the next screen, check off the targets you
+want to run (probably "dist" and one of "test" or "systemtest"). This should run the build targets and show you the
+results in Eclipse's console window.
 
-选择 "Run As," 然后"Ant Build..." (注意: 选择ellipsis (...), 否则不会出现一系列可以运行的 build targets). 接着, 在下一个屏幕中的"Targets" , 检出你想运行的targets (可能是 "dist" 和一个"test" 或 "systemtest").这些操作应该在控制台进行
+**Setting the Lab Up in IntelliJ**
 
-**在IntelliJ中设置**
+IntelliJ is a more modern Java IDE that is popular and more intuitive to use by some accounts. To use IntelliJ, first
+install it and open the application. Similar to Eclipse, under Projects, select Open and navigate to your project root.
+Double-click on the .project file (you may need to configure your operating system to reveal hidden files to see it),
+and click "open as project". IntelliJ has tool window support with Ant that you may want to setup according to
+instructions [here](https://www.jetbrains.com/help/idea/ant.html), but this is not essential to development.
+You can find a detailed walkthrough of IntelliJ features [here](https://www.jetbrains.com/help/idea/discover-intellij-idea.html)
 
-IntelliJ是一个更现代的Java IDE t，更流行也更容易操作。想使用 IntelliJ, 首先安装并打开. 和Eclipse相似, 在 Projects, 选择Open 并找到 项目根路径.双击.project 文件 (这个文件可能会被隐藏),
-点击"open as project". IntelliJ 有支持ant的工具窗口。操作说明在[这](https://www.jetbrains.com/help/idea/ant.html),但这并不适合初学者
-IntelliJ的更多特性在[这](https://www.jetbrains.com/help/idea/discover-intellij-idea.html)
+### 1.3. Implementation hints
 
-### 1.3. 实施提示
-
-开始编程之前我们强烈建议你读完整个文档，对高级数据库设计有一个大体的概念
-
-
-<p>
-你要补全还没实现的代码
-
-要补全的地方很好找
-
-你可能需要添加一些私有方法或帮助方法
-
-也可以改变APIs,但确保我们用来[打分的](#grading) test可以运行，然后在writeup中解释清楚你的方案
+Before beginning to write code, we **strongly encourage** you to read through this entire document to get a feel for the
+high-level design of SimpleDB.
 
 <p>
 
+You will need to fill in any piece of code that is not implemented. It will be obvious where we think you should write
+code. You may need to add private methods and/or helper classes. You may change APIs, but make sure
+our [grading](#grading) tests still run and make sure to mention, explain, and defend your decisions in your writeup.
 
-除了当前实验需要实现的方法，类和接口里还有一些后续实现的方法，他们被标记成下面的样子
+<p>
+
+In addition to the methods that you need to fill out for this lab, the class interfaces contain numerous methods that
+you need not implement until subsequent labs. These will either be indicated per class:
+
 ```java
 // Not necessary for lab1.
 public class Insert implements DbIterator {
 ```
 
-或者
+or per method:
 
 ```Java
 public boolean deleteTuple(Tuple t)throws DbException{
@@ -306,69 +301,90 @@ public boolean deleteTuple(Tuple t)throws DbException{
         return false;
         }
 ```
-你提交的代码暂时不用修改这样的方法
+
+The code that you submit should compile without having to modify these methods.
 
 <p>
-我们建议顺着文档指导你的实现，但你也可能探索出更适合你的实现顺序
 
+We suggest exercises along this document to guide your implementation, but you may find that a different order makes
+more sense for you.
 
 **Here's a rough outline of one way you might proceed with your SimpleDB implementation:**
 
 ---
 
-- 实现管理元组的相关类, 包括Tuple和TupleDesc. 我们已经为你实现了Field, IntField,
-  StringField和 Type. 由于只用支持integer和 (fixed length) string fixed
-  length tuples, 它们的实现简单直白
-- 实现Catalog (这个很简单).
-- 实现BufferPool 构造器 和getPage() 方法
-- 实现存取方法，包括 HeapPage 、HeapFile 和相关的 ID类. 他们中很大一部分已经为你写出来了
-- 实现运算符 SeqScan，然后通过ScanTest测试，这也是当前实验的最终目标
+- Implement the classes to manage tuples, namely Tuple, TupleDesc. We have already implemented Field, IntField,
+  StringField, and Type for you. Since you only need to support integer and (fixed length) string fields and fixed
+  length tuples, these are straightforward.
+- Implement the Catalog (this should be very simple).
+- Implement the BufferPool constructor and the getPage() method.
+- Implement the access methods, HeapPage and HeapFile and associated ID classes. A good portion of these files has
+  already been written for you.
+- Implement the operator SeqScan.
+- At this point, you should be able to pass the ScanTest system test, which is the goal for this lab.
 
-下面的第二章带你浏览一下每个实现步骤和单元测试的细节
+---
 
-### 1.4. 事务、锁和恢复
+Section 2 below walks you through these implementation steps and the unit tests corresponding to each one in more
+detail.
 
-纵观所有接口，你会看到很多有关事务、锁和恢复的相关内容，当前实验还不用支持这些特性，但你需要在接口中保留这些参数
+### 1.4. Transactions, locking, and recovery
 
-因为后续实验需要实现这些。我们提供的测试代码使用的是假的事务ID，该ID被传递给它所运行的查询的操作符；您应该将这个事务ID传递给其他操作符和缓冲池。
+As you look through the interfaces we have provided you, you will see a number of references to locking, transactions,
+and recovery. You do not need to support these features in this lab, but you should keep these parameters in the
+interfaces of your code because you will be implementing transactions and locking in a future lab. The test code we have
+provided you with generates a fake transaction ID that is passed into the operators of the query it runs; you should
+pass this transaction ID into other operators and the buffer pool.
 
-## 2. SimpleDB架构和实现知指导
+## 2. SimpleDB Architecture and Implementation Guide
 
-SimpleDB 包含:
+SimpleDB consists of:
 
-- 表示字段、元组和元组架构的类；
-- 将谓词和条件应用于元组的类；
-- 一个或多个访问方法(例如，堆文件),其将关系存储在盘上，并提供一种迭代通过那些关系的元组的方式；
-- 处理元组的运算符类的集合(例如，选择、连接、插入、删除等)。)；
-- 在内存中缓存活动元组和页面并处理并发控制和事务的缓冲池(当前实验无需考虑)；
-- 存储有关可用表及其模式的信息的目录
+- Classes that represent fields, tuples, and tuple schemas;
+- Classes that apply predicates and conditions to tuples;
+- One or more access methods (e.g., heap files) that store relations on disk and provide a way to iterate through tuples
+  of those relations;
+- A collection of operator classes (e.g., select, join, insert, delete, etc.) that process tuples;
+- A buffer pool that caches active tuples and pages in memory and handles concurrency control and transactions (neither
+  of which you need to worry about for this lab); and,
+- A catalog that stores information about available tables and their schemas.
 
-SimpleDB不包括许多您可能认为是“数据库”一部分的东西。特别是，SimpleDB没有:
+SimpleDB does not include many things that you may think of as being a part of a "database." In particular, SimpleDB
+does not have:
 
-- (在本实验中允许您将查询直接键入SimpleDB)的SQL前端或解析器，。相反，查询是通过将一组操作符链接到一个手工构建的查询计划中来构建的(参见[第2.7节](#query_walkthrough))。我们将提供一个简单的解析器供后面的实验使用。
-- 视图
-- 除整数和固定长度字符串以外的数据类型。
-- (在本实验中)查询优化器。
-- (在本实验中)索引
+- (In this lab), a SQL front end or parser that allows you to type queries directly into SimpleDB. Instead, queries are
+  built up by chaining a set of operators together into a hand-built query plan (see [Section 2.7](#query_walkthrough)).
+  We will provide a simple parser for use in later labs.
+- Views.
+- Data types except integers and fixed length strings.
+- (In this lab) Query optimizer.
+- (In this lab) Indices.
 
 <p>
 
- 在本节的其余部分，我们将描述您需要在本实验中实现的SimpleDB的每个主要组件。您应该使用本次讨论中的`exercises `来指导您的实现。本文档当然不是SimpleDB的完整规范 您将需要决定如何设计和实现系统的各个部分。请注意，对于实验1，除了顺序扫描之外，您不需要实现任何操作符(例如，select、join、project)。您将在未来的实验中添加对其他操作员的支持。
+In the rest of this Section, we describe each of the main components of SimpleDB that you will need to implement in this
+lab. You should use the exercises in this discussion to guide your implementation. This document is by no means a
+complete specification for SimpleDB; you will need to make decisions about how to design and implement various parts of
+the system. Note that for Lab 1 you do not need to implement any operators (e.g., select, join, project) except
+sequential scan. You will add support for additional operators in future labs.
 
 <p>
 
-### 2.1. Database Class
+### 2.1. The Database Class
 
-Database类提供对静态对象集合的访问，这些对象是数据库的全局状态。 特别是，这包括访问catalog(数据库中所有表的列表)、缓冲池(当前驻留在内存中的数据库文件页面的集合)和日志文件的方法 , . 在本实验中，您无需考虑日志文件。我们已经为您实现了数据库类。您应该看看这个文件，因为您将需要访问这些对象。
+The Database class provides access to a collection of static objects that are the global state of the database. In
+particular, this includes methods to access the catalog (the list of all the tables in the database), the buffer pool (
+the collection of database file pages that are currently resident in memory), and the log file. You will not need to
+worry about the log file in this lab. We have implemented the Database class for you. You should take a look at this
+file as you will need to access these objects.
 
-### 2.2. Fields 和 Tuples
+### 2.2. Fields and Tuples
 
-SimpleDB中的Tuples非常基础 。  它们由`Field`对象的集合组成，在`元组`中每个字段一个对象. `Field` 是一个实现了同一接口但表示不同数据类型类（整数、定长字符长）`元组`对象由底层访问方法(例如，堆文件或B树)创建，如下一节所述。元组还具有类型(或模式)属性，称为_元组描述符_，由`TupleDesc`对象表示。该对象由`Type`对象的集合组成，元组中每个 `Field`一个对象，每个对象描述相应字段的类型。
-
+<p>Tuples in SimpleDB are quite basic.  They consist of a collection of `Field` objects, one per field in the `Tuple`. `Field` is an interface that different data types (e.g., integer, string) implement.  `Tuple` objects are created by the underlying access methods (e.g., heap files, or B-trees), as described in the next section.  Tuples also have a type (or schema), called a _tuple descriptor_, represented by a `TupleDesc` object.  This object consists of a collection of `Type` objects, one per field in the tuple, each of which describes the type of the corresponding field.
 
 ### Exercise 1
 
-****实现下列类中的方法**
+**Implement the skeleton methods in:**
 
 ---
 
@@ -377,24 +393,23 @@ SimpleDB中的Tuples非常基础 。  它们由`Field`对象的集合组成，�
 
 ---
 
-此时，您的代码应该通过了单元测试TupleTest和TupleDescTest。但modifyRecordId()应该会失败，因为您还没有实现它。
+At this point, your code should pass the unit tests TupleTest and TupleDescTest. At this point, modifyRecordId() should
+fail because you havn't implemented it yet.
 
 ### 2.3. Catalog
 
-catalog (class `Catalog` in SimpleDB)包含了当前数据库里的表以及它们的schema, 您需要支持
+The catalog (class `Catalog` in SimpleDB) consists of a list of the tables and schemas of the tables that are currently
+in the database. You will need to support the ability to add a new table, as well as getting information about a
+particular table. Associated with each table is a `TupleDesc` object that allows operators to determine the types and
+number of fields in a table.
 
-* 添加新表
-* 获取特定表的信息。
-
-与每个表相关联的是一个`TupleDesc`对象，它允许操作员确定表中字段的类型和数量。
-
-全局目录是为整个SimpleDB进程分配的`catalog`的单个实例。
-
-可以通过`Database.getCatalog()`方法检索全局目录,与之相似的是buffer pool中的`Database.getBufferPool()`
+The global catalog is a single instance of `Catalog` that is allocated for the entire SimpleDB process. The global
+catalog can be retrieved via the method `Database.getCatalog()`, and the same goes for the global buffer pool (
+using `Database.getBufferPool()`).
 
 ### Exercise 2
 
-**实现catalog类中的方法:**
+**Implement the skeleton methods in:**
 
 ---
 
@@ -402,17 +417,18 @@ catalog (class `Catalog` in SimpleDB)包含了当前数据库里的表以及它�
 
 ---
 
-此时，您的代码应该通过了CatalogTest.
+At this point, your code should pass the unit tests in CatalogTest.
 
 ### 2.4. BufferPool
 
-缓冲池(SimpleDB中的类`buffer pool`)负责在内存中缓存最近从磁盘读取的页面。所有操作符都通过缓冲池从磁盘上的各种文件中读写页面。它由固定数量的页面组成，由`BufferPool`构造函数的`numPages`参数定义。在后面的实验中，您将实现回收策略. 对于当前实验，您只需要实现SeqScan操作符使用的构造函数和`BufferPool.getPage()`方法. 缓冲池应该存储最多`numPages`个页面。对于当前实验，如果对页面发出了超过`numPages`个请求，那么您可以直接抛出一个DbException，回收策略的实现部分后面的实验才会涉及。
+<p>The buffer pool (class `BufferPool` in SimpleDB) is responsible for caching pages in memory that have been recently read from disk. All operators read and write pages from various files on disk through the buffer pool. It consists of a fixed number of pages, defined by the `numPages` parameter to the `BufferPool` constructor. In later labs, you will implement an eviction policy. For this lab, you only need to implement the constructor and the `BufferPool.getPage()` method used by the SeqScan operator. The BufferPool should store up to `numPages` pages. For this lab, if more than `numPages` requests are made for different pages, then instead of implementing an eviction policy, you may throw a DbException. In future labs you will be required to implement an eviction policy.
 
-`Database` 类提供了静态方法 `Database.getBufferPool()`, 它会返回整个 SimpleDB进程拥有的的BufferPool唯一实例
+The `Database` class provides a static method, `Database.getBufferPool()`, that returns a reference to the single
+BufferPool instance for the entire SimpleDB process.
 
 ### Exercise 3
 
-**实现 `getPage()` 方法:**
+**Implement the `getPage()` method in:**
 
 ---
 
@@ -420,80 +436,87 @@ catalog (class `Catalog` in SimpleDB)包含了当前数据库里的表以及它�
 
 ---
 
-我们没有为BufferPool提供单元测试。您实现的功能将在后面的HeapFile实现中进行测试。您应该使用“DbFile.readPage”方法来访问DbFile的页面。
+We have not provided unit tests for BufferPool. The functionality you implemented will be tested in the implementation
+of HeapFile below. You should use the `DbFile.readPage` method to access pages of a DbFile.
 
 <!--
-当缓冲池中的页面超过这个数量时，应该在加载下一个页面之前从缓冲池中清除一个页面。回收政策的选择由你决定；没有必要做复杂的事情。
+When more than this many pages are in the buffer pool, one page should be
+evicted from the pool before the next is loaded.  The choice of eviction
+policy is up to you; it is not necessary to do something sophisticated.
 -->
 
 <!--
 <p>
-请注意,`buffer pool`要求您实现一个`flush _ all _ pages()`方法。这在缓冲池的实际实现中是不需要的。然而，我们需要这个方法来进行测试。你不应该在你的代码中的任何地方调用这个方法。
+
+Notice that `BufferPool` asks you to implement
+a `flush_all_pages()` method.  This is not something you would ever
+need in a real implementation of a buffer pool.  However, we need this method
+for testing purposes.  You really should never call this method from anywhere
+in your code.
 -->
 
-### 2.5. HeapFile 存取方法
+### 2.5. HeapFile access method
 
-存取方法提供了一种从以特定方式排列的磁盘中读取或写入数据的方法。常见的存取方法包括堆文件(元组的未排序文件)和B树；对于这个任务，您将只实现一个堆文件访问方法，我们已经为您编写了一些代码。
-
-一个`HeapFile`对象被安排成一组页面，每个页面由固定数量的字节组成，用于存储元组, (由常数`BufferPool.DEFAULT_PAGE_SIZE`定义),包括标题。在SimpleDB中，数据库中的每个表都有一个`HeapFile`对象。
-
-`HeapFile`中的每个页面被安排为一组槽，每个槽可以容纳一个元组(SimpleDB中给定表的元组都是相同大小的)。
-
-除了这些槽，每个页面都有一个由位图组成的头，每个元组槽一位。
-
-如果对应于特定元组的位是1，则表明该元组是有效的; 如果为0，则元组无效 (例如已被删除或从未被初始化.) 
-
-`HeapFile`对象的页面是实现`Page`接口的`HeapPage`类型。页面存储在缓冲池中，但由`HeapFile`类读写。
-
-
+Access methods provide a way to read or write data from disk that is arranged in a specific way. Common access methods
+include heap files (unsorted files of tuples) and B-trees; for this assignment, you will only implement a heap file
+access method, and we have written some of the code for you.
 
 <p>
-SimpleDB在磁盘上存储堆文件的格式与它们在内存中存储的格式大致相同。
 
-每个文件由磁盘上连续排列的页面数据组成.
+A `HeapFile` object is arranged into a set of pages, each of which consists of a fixed number of bytes for storing
+tuples, (defined by the constant `BufferPool.DEFAULT_PAGE_SIZE`), including a header. In SimpleDB, there is
+one `HeapFile` object for each table in the database. Each page in a `HeapFile` is arranged as a set of slots, each of
+which can hold one tuple (tuples for a given table in SimpleDB are all of the same size). In addition to these slots,
+each page has a header that consists of a bitmap with one bit per tuple slot. If the bit corresponding to a particular
+tuple is 1, it indicates that the tuple is valid; if it is 0, the tuple is invalid (e.g., has been deleted or was never
+initialized.) Pages of `HeapFile` objects are of type `HeapPage` which implements the `Page` interface. Pages are
+stored in the buffer pool but are read and written by the `HeapFile` class.
 
-每个页面由一个或多个字节表示头部
+<p>
 
-后面紧跟真正的页面内容
+SimpleDB stores heap files on disk in more or less the same format they are stored in memory. Each file consists of page
+data arranged consecutively on disk. Each page consists of one or more bytes representing the header, followed by the _
+page size_ bytes of actual page content. Each tuple requires _tuple size_ \* 8 bits for its content and 1 bit for the
+header. Thus, the number of tuples that can fit in a single page is:
 
-没个元祖需要8bits数据部分和1bit头部
-
-所以一个页面中的元祖数量计算为
+<p>
 
 `_tuples per page_ = floor((_page size_ * 8) / (_tuple size_ * 8 + 1))`
 
+<p>
 
-
-
-
- _tuple size_ 是也页面中元组的 bytes数. 
-
-
-
-这里的想法是，每个元组在头中需要一个额外的存储位。
-
-我们计算一页中的位数(通过将页大小乘以8) , 并将该数量除以元组中的比特数(包括该额外的报头比特)以获得每页的元组数。 floor运算向下舍入到最接近的整数个元组(我们不想在一个页面上存储部分元组！)
+Where _tuple size_ is the size of a tuple in the page in bytes. The idea here is that each tuple requires one additional
+bit of storage in the header. We compute the number of bits in a page (by mulitplying page size by 8), and divide this
+quantity by the number of bits in a tuple (including this extra header bit) to get the number of tuples per page. The
+floor operation rounds down to the nearest integer number of tuples (we don't want to store partial tuples on a page!)
 
 <p>
 
-一旦我们知道了每页的元组数，存储头所需的字节数就是:
+Once we know the number of tuples per page, the number of bytes required to store the header is simply:
 
 <p>
+
 `headerBytes = ceiling(tupsPerPage/8)`
 
 <p>
 
-ceiling运算向上舍入到最接近的整数字节数(我们从不存储少于一个完整字节的头信息。)
+The ceiling operation rounds up to the nearest integer number of bytes (we never store less than a full byte of header
+information.)
 
 <p>
 
-每个字节的低位(最低有效位)代表文件中较早的槽的状态。因此，第一个字节的最低位表示页面中的第一个槽是否在使用中。第一个字节的第二个最低位表示页面中的第二个槽是否正在使用，依此类推。另外，请注意 最后一个字节的高位可能不对应于文件中实际存在的槽，因为槽的数量可能不是8的倍数。还要注意，所有的Java虚拟机都是[big-endian](http://en . Wikipedia . org/wiki/Endianness)。
+The low (least significant) bits of each byte represents the status of the slots that are earlier in the file. Hence,
+the lowest bit of the first byte represents whether or not the first slot in the page is in use. The second lowest bit
+of the first byte represents whether or not the second slot in the page is in use, and so on. Also, note that the
+high-order bits of the last byte may not correspond to a slot that is actually in the file, since the number of slots
+may not be a multiple of 8. Also note that all Java virtual machines
+are [big-endian](http://en.wikipedia.org/wiki/Endianness).
 
 <p>
 
 ### Exercise 4
 
-**实现下列方法:**
+**Implement the skeleton methods in:**
 
 ---
 
@@ -503,19 +526,25 @@ ceiling运算向上舍入到最接近的整数字节数(我们从不存储少于
 
 ---
 
-虽然您不会在实验1中直接使用它们，但我们要求您实现< tt>getNumEmptySlots()</tt >和< tt > HeapPage中的isSlotUsed()</tt >。这些需要在页头中推送位。您可能会发现查看以下内容很有帮助 HeapPage或< TT > src/simple db/heapfileencoder . Java </TT >中提供的其他方法来理解 页面布局。
+Although you will not use them directly in Lab 1, we ask you to implement <tt>getNumEmptySlots()</tt> and <tt>
+isSlotUsed()</tt> in HeapPage. These require pushing around bits in the page header. You may find it helpful to look at
+the other methods that have been provided in HeapPage or in <tt>src/simpledb/HeapFileEncoder.java</tt> to understand the
+layout of pages.
 
-您还需要在页面中的元组上实现一个迭代器，这可能涉及到一个辅助类或数据结构。
+You will also need to implement an Iterator over the tuples in the page, which may involve an auxiliary class or data
+structure.
 
-此时，您的代码应该通过了HeapPageIdTest、RecordIDTest和HeapPageReadTest中的单元测试。
+At this point, your code should pass the unit tests in HeapPageIdTest, RecordIDTest, and HeapPageReadTest.
 
 <p>
 
-在您实现了<tt >堆分页</tt >之后，您将在本实验中为<tt>堆文件</tt >编写方法，以计算文件中的页数并从文件中读取一页。然后，您将能够从存储在磁盘上的文件中获取元组。
+After you have implemented <tt>HeapPage</tt>, you will write methods for <tt>HeapFile</tt> in this lab to calculate the
+number of pages in a file and to read a page from the file. You will then be able to fetch tuples from a file stored on
+disk.
 
 ### Exercise 5
 
-**实现下列方法:**
+**Implement the skeleton methods in:**
 
 ---
 
@@ -523,40 +552,52 @@ ceiling运算向上舍入到最接近的整数字节数(我们从不存储少于
 
 ---
 
-要从磁盘中读取一页，首先需要计算文件中正确的偏移量。提示:您将需要随机访问该文件，以便以任意偏移量读写页面。从磁盘读取页面时，不应调用BufferPool方法。
+To read a page from disk, you will first need to calculate the correct offset in the file. Hint: you will need random
+access to the file in order to read and write pages at arbitrary offsets. You should not call BufferPool methods when
+reading a page from disk.
 
 <p> 
-您还需要实现“HeapFile.iterator()”方法，该方法应该遍历HeapFile中每个页面的元组。迭代器必须使用“BufferPool.getPage()”方法来访问“HeapFile”中的页面。该方法将页面加载到缓冲池中，并最终用于(在后面的实验中)实现基于锁定的并发控制和恢复。不要在open()调用时将整个表加载到内存中——这将导致非常大的表出现内存不足的错误。
-
-<p>
-    此时，您的代码应该通过了HeapFileReadTest中的单元测试。
-
-
-
-### 2.6. 操作符
-
-操作符负责查询计划的实际执行。它们实现关系的操作 代数。在SimpleDB中，运算符是基于迭代器的；每个运算符都实现“DbIterator”接口。
+You will also need to implement the `HeapFile.iterator()` method, which should iterate through through the tuples of each page in the HeapFile. The iterator must use the `BufferPool.getPage()` method to access pages in the `HeapFile`. This method loads the page into the buffer pool and will eventually be used (in a later lab) to implement locking-based concurrency control and recovery.  Do not load the entire table into memory on the open() call -- this will cause an out of memory error for very large tables.
 
 <p>
 
-通过将较低级别的操作符传递到较高级别的操作符的构造函数中，即通过“将它们链接在一起”，操作符被连接到一个计划中计划叶子上的特殊访问方法操作符负责从磁盘读取数据(因此它们下面没有任何操作符)。
+At this point, your code should pass the unit tests in HeapFileReadTest.
+
+### 2.6. Operators
+
+Operators are responsible for the actual execution of the query plan. They implement the operations of the relational
+algebra. In SimpleDB, operators are iterator based; each operator implements the `DbIterator` interface.
 
 <p>
 
-在计划的顶部，与SimpleDB交互的程序简单地调用根操作符上的‘get next ’;然后，该操作符对其子操作符调用“getNext ”,依此类推，直到这些叶操作符被调用。它们从磁盘获取元组，并沿树向上传递它们(作为“getNext”的返回参数)；元组以这种方式在计划中向上传播，直到它们在根处被输出，或者被计划中的另一个操作符组合或拒绝。
+Operators are connected together into a plan by passing lower-level operators into the constructors of higher-level
+operators, i.e., by 'chaining them together.' Special access method operators at the leaves of the plan are responsible
+for reading data from the disk (and hence do not have any operators below them).
 
 <p>
+
+At the top of the plan, the program interacting with SimpleDB simply calls `getNext` on the root operator; this operator
+then calls `getNext` on its children, and so on, until these leaf operators are called. They fetch tuples from disk and
+pass them up the tree (as return arguments to `getNext`); tuples propagate up the plan in this way until they are output
+at the root or combined or rejected by another operator in the plan.
+
+<p>
+
 <!--
-对于实现“插入”和“删除”查询的计划，最顶层的操作符是一个特殊的“插入”或“删除”操作符，用于修改磁盘上的页面。这些操作符向用户级程序返回一个包含受影响元组的计数的元组。
+For plans that implement `INSERT` and `DELETE` queries,
+the top-most operator is a special `Insert` or `Delete`
+operator that modifies the pages on disk.  These operators return a tuple
+containing the count of the number of affected tuples to the user-level
+program.
 
 <p>
 -->
 
-对于本实验，您只需要实现一个SimpleDB操作符。
+For this lab, you will only need to implement one SimpleDB operator.
 
 ### Exercise 6.
 
-**实现下列方法:**
+**Implement the skeleton methods in:**
 
 ---
 
@@ -568,13 +609,17 @@ This operator sequentially scans all of the tuples from the pages of the table s
 constructor. This operator should access tuples through the `DbFile.iterator()` method.
 
 <p>At this point, you should be able to complete the ScanTest system test. Good work!
-您将在后续实验中填写其他操作符。<a name="query_walkthrough"></a>
+
+You will fill in other operators in subsequent labs.
+
+<a name="query_walkthrough"></a>
 
 ### 2.7. A simple query
 
-本节的目的是说明如何将这些不同的组件连接在一起以处理一个简单的 查询。
+The purpose of this section is to illustrate how these various components are connected together to process a simple
+query.
 
-假设你有一个数据文件“some_data_file.txt”，内容如下: 
+Suppose you have a data file, "some_data_file.txt", with the following contents:
 
 ```
 1,1,1
@@ -583,16 +628,15 @@ constructor. This operator should access tuples through the `DbFile.iterator()` 
 ```
 
 <p>
-您可以将其转换为SimpleDB可以查询的二进制文件，如下所示:
+You can convert this into a binary file that SimpleDB can query as follows:
 <p>
 ```java -jar dist/simpledb.jar convert some_data_file.txt 3```
 <p>
-这里，参数“3”告诉conver输入有3列。
+Here, the argument "3" tells conver that the input has 3 columns.
 <p>
-以下代码实现了对该文件的简单选择查询。这段代码相当于SQL语句`SELECT * FROM some_data_file`。
+The following code implements a simple selection query over this file. This code is equivalent to the SQL statement `SELECT * FROM some_data_file`.
 
-
-```java
+```
 package simpledb;
 import java.io.*;
 
@@ -660,53 +704,67 @@ Note that `ant` compiles `test.java` and generates a new jarfile that contains i
 
 ## 3. Logistics
 
-你必须提交你的代码(见下文)以及一篇描述你的方法的短文(最多2页)。该记录应:
+You must submit your code (see below) as well as a short (2 pages, maximum) writeup describing your approach. This
+writeup should:
 
-- 描述你的设计思路
-- 讨论并证明您对API所做的更改。
-- 描述代码中缺失或不完整的元素。
-- -描述你在实验室花了多长时间，以及是否有你觉得特别困难或困惑的事情。
+- Describe any design decisions you made. These may be minimal for Lab 1.
+- Discuss and justify any changes you made to the API.
+- Describe any missing or incomplete elements of your code.
+- Describe how long you spent on the lab, and whether there was anything you found particularly difficult or confusing.
 
-### 3.1. **合作**
+### 3.1. Collaboration
 
-这个实验室对一个人来说应该是可以完成的，但是如果你喜欢和一个伙伴一起工作，这也是可以的。不允许更大的组。请明确指出你在个人报告中与谁一起工作，如果有人的话。
+This lab should be manageable for a single person, but if you prefer to work with a partner, this is also OK. Larger
+groups are not allowed. Please indicate clearly who you worked with, if anyone, on your individual writeup.
 
-### 3.2. 提交
+### 3.2. Submitting your assignment
 
 <!--
-提交之前创建一个 <tt>6.830-lab1.tar.gz</tt>压缩包 然后提交到 [6.830 Stellar Site](https://stellar.mit.edu/S/course/6/sp13/6.830/index.html). You can use the `ant handin` target to generate the tarball.
+To submit your code, please create a <tt>6.830-lab1.tar.gz</tt> tarball (such
+that, untarred, it creates a <tt>6.830-lab1/src/simpledb</tt> directory with
+your code) and submit it on the [6.830 Stellar Site](https://stellar.mit.edu/S/course/6/sp13/6.830/index.html). You can use the `ant handin` target to generate the tarball.
 -->
 
-我们将使用gradescope自动批改所有的程序作业。你们都应该被邀请到班级中；如果没有，请查看piazza 的邀请代码. 如果您仍然有问题，请让我们知道，我们可以 帮助您设置. 您可以在截止日期前多次提交您的代码；我们将使用最新版本作为 由gradescope确定。将报告与您提交的材料放在一个名为lab1-writeup.txt的文件中。您还需要显式添加您创建的任何其他文件，例如new \*。java文件。
+We will be using gradescope to autograde all programming assignments. You should have all been invited to the
+class instance; if not, please check piazza for an invite code. If you are still having trouble, let us know and we can
+help you set up. You may submit your code multiple times before the deadline; we will use the latest version as
+determined by gradescope. Place the write-up in a file called lab1-writeup.txt with your submission.
+You also need to explicitly add any other files you create, such as new \*.java files.
 
-向gradescope提交的最简单方法是使用包含您的代码的`. zip '文件。在Linux/MacOS上，您可以通过运行以下命令来实现:
+The easiest way to submit to gradescope is with `.zip` files containing your code. On Linux/MacOS, you can
+do so by running the following command:
 
 ```bash
 $ zip -r submission.zip src/ lab1-writeup.txt
 ```
 
-### 3.3. 提交bug
+### 3.3. Submitting a bug
 
-如果有bug,请把报告到 [6.830-staff@mit.edu](mailto:6.830-staff@mit.edu).报告应该包含以下内容
+Please submit (friendly!) bug reports to [6.830-staff@mit.edu](mailto:6.830-staff@mit.edu). When you do, please try to
+include:
 
-- bug描述
-- 一个可以放在 test/simpledb 目录下编译和运行的.java file
-- 一个存放了可以用来复现bug的数据的.txt文件,支持使用`HeapFileEncoder`转为.dat文件
+- A description of the bug.
+- A .java file we can drop in the test/simpledb directory, compile, and run.
+- A .txt file with the data that reproduces the bug. We should be able to convert it to a .dat file using
+  HeapFileEncoder.
 
-bug的首位提出者将获得糖果
+If you are the first person to report a particular bug in the code, we will give you a candy bar!
 
-<!--最新的bug报告/补丁点击[here](bugs.html).-->
+<!--The latest bug reports/fixes can be found [here](bugs.html).-->
 
 <a name="grading"></a>
 
 ### 3.4 Grading
 
-<p>你的分数的75%将基于你的代码是否通过我们将运行的系统测试套件，这些测试是我们已经提供的测试的超集。
+<p>75% of your grade will be based on whether or not your code passes the system test suite we will run over it. These tests will be a superset of the tests we have provided. Before handing in your code, you should make sure it produces no errors (passes all of the tests) from both  <tt>ant test</tt> and <tt>ant systemtest</tt>.
 
-在提交您的代码之前，您应该确保它没有产生来自<tt>ant test</tt >和<tt>ant systemtest</tt >的错误(通过所有测试)。
+**Important:** before testing, gradescope will replace your <tt>build.xml</tt> and the entire contents of the <tt>test</tt>
+directory with our version of these files. This means you cannot change the format of <tt>.dat</tt> files! You should
+also be careful changing our APIs. You should test that your code compiles the unmodified tests.
 
-**重要提示:** 在测试之前，gradescope将替换您的<tt>build.xml</tt >和<tt >测试</tt >的全部内容目录与我们的这些文件的版本。这意味着您不能更改<tt >的格式.dat</tt >文件！你应该慎重改变我们的API。您应该测试您的代码是否编译了未修改的测试。
+You should get immediate feedback and error outputs for failed tests (if any) from gradescope after
+submission. The score given will be your grade for the autograded portion of the assignment. An additional 25% of your
+grade will be based on the quality of your writeup and our subjective evaluation of your code. This part
+will also be published on gradescope after we finish grading your assignment.
 
-之后，您将从gradescope获得失败测试的即时反馈和错误输出(如果有) 提交。给出的分数将作为你作业中亲笔签名部分的分数。额外的25% 分数将基于你的写作质量和我们对你的代码的主观评价。这部分也会在我们完成你的作业评分后发表在gradescope上。
-
-我们在设计这个作业的过程中得到了很多乐趣，我们希望你能喜欢这个作业！
+We had a lot of fun designing this assignment, and we hope you enjoy hacking on it!
